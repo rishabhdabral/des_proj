@@ -30,6 +30,8 @@ class Window(QtGui.QWidget):
     def __init__(self, rows, columns):
         QtGui.QWidget.__init__(self)
         self.table = TableWidget(rows, columns, self)
+	self.num_rows = rows
+	self.num_columns = columns
 	self.text_field = QtGui.QLabel("Hi")
         for column in xrange(columns):
             for row in xrange(rows):
@@ -55,18 +57,32 @@ class Window(QtGui.QWidget):
 	print item2
 	#print item.row()'''
 	#	print item.row(),item.column()
-	#	item.setBackground(QtGui.QColor('moccasin'))
-	item2 = self.table.item(item.row()+1,item.column())
-	#print item2.row(),item2.column()
-	item2.setBackground(QtGui.QColor('moccasin'))
-	item1 = self.table.item(item.row()-1,item.column())
-	item1.setBackground(QtGui.QColor('moccasin'))
-	item3 = self.table.item(item.row(),item.column()+1)
-	item3.setBackground(QtGui.QColor('moccasin'))
-	item4 = self.table.item(item.row(),item.column()-1)
-	item4.setBackground(QtGui.QColor('moccasin'))
-
-
+	item.setBackground(QtGui.QColor('moccasin'))
+	try:
+		item2 = self.table.item(item.row()+1,item.column())
+		#print item2.row(),item2.column()
+		item2.setBackground(QtGui.QColor('moccasin'))
+	except:
+		pass
+	try:
+		item1 = self.table.item(item.row()-1,item.column())
+		item1.setBackground(QtGui.QColor('moccasin'))
+	except:
+		pass
+	try:
+		if item.column() == self.num_columns-1:
+			raise Exception
+		item3 = self.table.item(item.row(),item.column()+1)
+		item3.setBackground(QtGui.QColor('moccasin'))
+	except:
+		pass
+	try:
+		if item.column() == 0:
+			raise Exception
+		item4 = self.table.item(item.row(),item.column()-1)
+		item4.setBackground(QtGui.QColor('moccasin'))
+	except:
+		pass
 
     def on_item_clicked(self,x,y):
 	cell_text = self.table.item(x,y).text()
@@ -74,15 +90,31 @@ class Window(QtGui.QWidget):
 	self.text_field.setText(self.display_text)	
 
     def handleItemExited(self, item):
-	item2 = self.table.item(item.row()+1,item.column())
-        item2.setBackground(QtGui.QTableWidgetItem().background())
-	item1 = self.table.item(item.row()-1,item.column())
-	item1.setBackground(QtGui.QTableWidgetItem().background())
-	item3 = self.table.item(item.row(),item.column()+1)
-	item3.setBackground(QtGui.QTableWidgetItem().background())
-	item4 = self.table.item(item.row(),item.column()-1)
-	item4.setBackground(QtGui.QTableWidgetItem().background())
-	
+	try:
+		item2 = self.table.item(item.row()+1,item.column())
+	        item2.setBackground(QtGui.QTableWidgetItem().background())
+	except:
+		pass
+	try:
+		item1 = self.table.item(item.row()-1,item.column())
+		item1.setBackground(QtGui.QTableWidgetItem().background())
+	except:
+		pass
+	try:
+		if item.column() == self.num_columns-1:
+			raise Exception
+		item3 = self.table.item(item.row(),item.column()+1)
+		item3.setBackground(QtGui.QTableWidgetItem().background())
+	except:
+		pass
+	try:
+		if item.column() == 0:
+			raise Exception
+		item4 = self.table.item(item.row(),item.column()-1)
+		item4.setBackground(QtGui.QTableWidgetItem().background())
+	except:
+		pass
+	item.setBackground(QtGui.QTableWidgetItem().background())	
 
 
 if __name__ == '__main__':
