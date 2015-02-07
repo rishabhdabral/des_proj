@@ -1,4 +1,6 @@
 from PyQt4 import QtGui, QtCore
+import threading
+import time
 
 class TableWidget(QtGui.QTableWidget):
     cellExited = QtCore.pyqtSignal(int, int)
@@ -47,6 +49,8 @@ class Window(QtGui.QWidget):
         self.table.cellClicked.connect(self.on_item_clicked)
 	self.table.itemEntered.connect(self.handleItemEntered)
         self.table.itemExited.connect(self.handleItemExited)
+	
+	
 
     def handleItemEntered(self, item):
 	'''
@@ -56,17 +60,34 @@ class Window(QtGui.QWidget):
         item2 = self.table.itemAt(point)
 	print item2
 	#print item.row()'''
-	#	print item.row(),item.column()
+	self.stop = threading.Event()
 	item.setBackground(QtGui.QColor('moccasin'))
 	try:
+		self.thread = threading.Thread(target = self.blink, args = (item,))
+		self.thread.start()
+	except:
+		print "Unable to start thread"
+	try:
 		item2 = self.table.item(item.row()+1,item.column())
-		#print item2.row(),item2.column()
 		item2.setBackground(QtGui.QColor('moccasin'))
+		try:
+			#self.stop2 = threading.Event()
+			self.thread2 = threading.Thread(target = self.blink, args = (item2,))
+			self.thread2.start()
+		except:
+			print "Unable to start thread2"
 	except:
 		pass
 	try:
 		item1 = self.table.item(item.row()-1,item.column())
 		item1.setBackground(QtGui.QColor('moccasin'))
+		try:
+                        #self.stop1 = threading.Event()
+                        self.thread1 = threading.Thread(target = self.blink, args = (item1,))
+                        self.thread1.start()
+                except:
+                        print "Unable to start thread1"
+
 	except:
 		pass
 	try:
@@ -74,6 +95,13 @@ class Window(QtGui.QWidget):
 			raise Exception
 		item3 = self.table.item(item.row(),item.column()+1)
 		item3.setBackground(QtGui.QColor('moccasin'))
+		try:
+                        #self.stop3 = threading.Event()
+                        self.thread3 = threading.Thread(target = self.blink, args = (item3,))
+                        self.thread3.start()
+                except:
+                        print "Unable to start thread3"
+
 	except:
 		pass
 	try:
@@ -81,15 +109,61 @@ class Window(QtGui.QWidget):
 			raise Exception
 		item4 = self.table.item(item.row(),item.column()-1)
 		item4.setBackground(QtGui.QColor('moccasin'))
+		try:
+                        #self.stop4 = threading.Event()
+                        self.thread4 = threading.Thread(target = self.blink, args = (item4,))
+                        self.thread4.start()
+                except:
+                        print "Unable to start thread4"
+
 	except:
 		pass
 
+	#Threading to pass to the blinking function
+	"""
+	while not self.thread1_stop.is_set():
+		try:
+			self.thread1 = threading.Thread(target = self.blink, args = (item1,))
+			self.thread1.start()
+		except:
+			pass
+		"""
+	"""
+		thread.start_new_thread(blink,(item1,200))
+		thread.start_new_thread(blink,(item,300))
+		thread.start_new_thread(blink,(item3,400))
+		thread.start_new_thread(blink,(item4,500))
+	try:
+		#self.thread1_stop.clear()
+		self.thread1_stop = threading.Event()
+		self.thread1 = threading.Thread(target = self.blink, args = (item1,))
+		self.thread1.start()
+	except:
+		 print "Error: Unable to start thread"
+	"""
+
+
     def on_item_clicked(self,x,y):
 	cell_text = self.table.item(x,y).text()
-	self.display_text += cell_text
+	self.display_text += " " + cell_text
 	self.text_field.setText(self.display_text)	
 
     def handleItemExited(self, item):
+	try:
+		self.stop.set()
+		#self.stop2.set()
+		#self.stop3.set()
+		#self.stop4.set()
+		self.thread.join()
+		self.thread1.join()
+		self.thread2.join()
+		self.thread3.join()
+		self.thread4.join()
+		#print "Thread released"
+		#self.thread1_stop.clear()
+	except:
+		print "Error"
+
 	try:
 		item2 = self.table.item(item.row()+1,item.column())
 	        item2.setBackground(QtGui.QTableWidgetItem().background())
@@ -115,6 +189,16 @@ class Window(QtGui.QWidget):
 	except:
 		pass
 	item.setBackground(QtGui.QTableWidgetItem().background())	
+
+    def blink(self, item):
+	print "It's blinking"
+	while (self.stop.is_set()==False):
+		#for i in xrange(1000):
+		item.setBackground(QtGui.QColor('moccasin'))
+		time.sleep(0.1)
+		item.setBackground(QtGui.QTableWidgetItem().background())
+		time.sleep(0.1)
+	#self.thread1_stop.clear()	
 
 
 if __name__ == '__main__':
