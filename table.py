@@ -63,7 +63,7 @@ class Window(QtGui.QWidget):
 	self.stop = threading.Event()
 	item.setBackground(QtGui.QColor('moccasin'))
 	try:
-		self.thread = threading.Thread(target = self.blink, args = (item,))
+		self.thread = threading.Thread(target = self.blink, args = (item,8,))
 		self.thread.start()
 	except:
 		print "Unable to start thread"
@@ -72,7 +72,7 @@ class Window(QtGui.QWidget):
 		item2.setBackground(QtGui.QColor('moccasin'))
 		try:
 			#self.stop2 = threading.Event()
-			self.thread2 = threading.Thread(target = self.blink, args = (item2,))
+			self.thread2 = threading.Thread(target = self.blink, args = (item2,7,))
 			self.thread2.start()
 		except:
 			print "Unable to start thread2"
@@ -83,7 +83,7 @@ class Window(QtGui.QWidget):
 		item1.setBackground(QtGui.QColor('moccasin'))
 		try:
                         #self.stop1 = threading.Event()
-                        self.thread1 = threading.Thread(target = self.blink, args = (item1,))
+                        self.thread1 = threading.Thread(target = self.blink, args = (item1,3,))
                         self.thread1.start()
                 except:
                         print "Unable to start thread1"
@@ -97,7 +97,7 @@ class Window(QtGui.QWidget):
 		item3.setBackground(QtGui.QColor('moccasin'))
 		try:
                         #self.stop3 = threading.Event()
-                        self.thread3 = threading.Thread(target = self.blink, args = (item3,))
+                        self.thread3 = threading.Thread(target = self.blink, args = (item3,10,))
                         self.thread3.start()
                 except:
                         print "Unable to start thread3"
@@ -111,7 +111,7 @@ class Window(QtGui.QWidget):
 		item4.setBackground(QtGui.QColor('moccasin'))
 		try:
                         #self.stop4 = threading.Event()
-                        self.thread4 = threading.Thread(target = self.blink, args = (item4,))
+                        self.thread4 = threading.Thread(target = self.blink, args = (item4,5,))
                         self.thread4.start()
                 except:
                         print "Unable to start thread4"
@@ -190,14 +190,14 @@ class Window(QtGui.QWidget):
 		pass
 	item.setBackground(QtGui.QTableWidgetItem().background())	
 
-    def blink(self, item):
+    def blink(self, item,t):
 	print "It's blinking"
 	while (self.stop.is_set()==False):
 		#for i in xrange(1000):
 		item.setBackground(QtGui.QColor('moccasin'))
-		time.sleep(0.1)
+		time.sleep(0.01*t)
 		item.setBackground(QtGui.QTableWidgetItem().background())
-		time.sleep(0.1)
+		time.sleep(0.01*t)
 	#self.thread1_stop.clear()	
 
 
