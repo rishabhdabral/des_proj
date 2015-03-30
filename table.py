@@ -1,6 +1,7 @@
 from PyQt4 import QtGui, QtCore
 import threading
 import time
+from threading import Timer
 
 class TableWidget(QtGui.QTableWidget):
     cellExited = QtCore.pyqtSignal(int, int)
@@ -35,10 +36,28 @@ class Window(QtGui.QWidget):
 	self.num_rows = rows
 	self.num_columns = columns
 	self.text_field = QtGui.QLabel("Hi")
+	'''
         for column in xrange(columns):
             for row in xrange(rows):
                 item = QtGui.QTableWidgetItem(str(row) + "_" + str(column))
                 self.table.setItem(row, column, item)
+	'''	
+	for row in xrange(rows-1):
+		for column in xrange(columns):
+			item = QtGui.QTableWidgetItem(str(3*row + column + 1))
+			self.table.setItem(row,column,item)
+	#setting the last row of the numpad:
+	item = QtGui.QTableWidgetItem("*")
+	self.table.setItem(3,0,item)
+	item0 = QtGui.QTableWidgetItem("0")
+	self.table.setItem(3,1,item0)
+	item1 = QtGui.QTableWidgetItem("#")
+	self.table.setItem(3,2,item1)
+
+	for column in xrange(columns):
+		self.table.setColumnWidth(column,150)
+	for row in xrange(rows+1):
+		self.table.setRowHeight(row,60)
 
 	self.point = QtCore.QPoint(0,0) #global variable to know which item in the table is clicked
 	self.display_text = ""
@@ -48,9 +67,12 @@ class Window(QtGui.QWidget):
 	self.table.setMouseTracking(True)
         self.table.cellClicked.connect(self.on_item_clicked)
 	self.table.itemEntered.connect(self.handleItemEntered)
-        self.table.itemExited.connect(self.handleItemExited)
-	
-	
+        self.table.itemExited.connect(self.handleItemExited)	
+	self.freq = 9
+	self.freq1 = 10
+	self.freq2 = 11
+	self.freq3 = 12
+	self.freq4 = 13
 
     def handleItemEntered(self, item):
 	'''
@@ -60,19 +82,24 @@ class Window(QtGui.QWidget):
         item2 = self.table.itemAt(point)
 	print item2
 	#print item.row()'''
+	
+	# Setting timer to click on that button after certain time has elapsed and the cursor is still hovering in the same button!
+	self.time_to_click = Timer(2,self.on_item_clicked,args = [item.row(),item.column(),])
+	self.time_to_click.start()	#This function is called after two seconds if the function remains in the same block.
+	
 	self.stop = threading.Event()
-	item.setBackground(QtGui.QColor('moccasin'))
+	item.setBackground(QtGui.QColor('black'))
 	try:
-		self.thread = threading.Thread(target = self.blink, args = (item,8,))
+		self.thread = threading.Thread(target = self.blink, args = (item,3.5,))
 		self.thread.start()
 	except:
 		print "Unable to start thread"
 	try:
 		item2 = self.table.item(item.row()+1,item.column())
-		item2.setBackground(QtGui.QColor('moccasin'))
+		item2.setBackground(QtGui.QColor('black'))
 		try:
 			#self.stop2 = threading.Event()
-			self.thread2 = threading.Thread(target = self.blink, args = (item2,7,))
+			self.thread2 = threading.Thread(target = self.blink, args = (item2,4,))
 			self.thread2.start()
 		except:
 			print "Unable to start thread2"
@@ -80,10 +107,10 @@ class Window(QtGui.QWidget):
 		pass
 	try:
 		item1 = self.table.item(item.row()-1,item.column())
-		item1.setBackground(QtGui.QColor('moccasin'))
+		item1.setBackground(QtGui.QColor('black'))
 		try:
                         #self.stop1 = threading.Event()
-                        self.thread1 = threading.Thread(target = self.blink, args = (item1,3,))
+                        self.thread1 = threading.Thread(target = self.blink, args = (item1,5.5,))
                         self.thread1.start()
                 except:
                         print "Unable to start thread1"
@@ -94,10 +121,10 @@ class Window(QtGui.QWidget):
 		if item.column() == self.num_columns-1:
 			raise Exception
 		item3 = self.table.item(item.row(),item.column()+1)
-		item3.setBackground(QtGui.QColor('moccasin'))
+		item3.setBackground(QtGui.QColor('black'))
 		try:
                         #self.stop3 = threading.Event()
-                        self.thread3 = threading.Thread(target = self.blink, args = (item3,10,))
+                        self.thread3 = threading.Thread(target = self.blink, args = (item3,5,))
                         self.thread3.start()
                 except:
                         print "Unable to start thread3"
@@ -108,10 +135,10 @@ class Window(QtGui.QWidget):
 		if item.column() == 0:
 			raise Exception
 		item4 = self.table.item(item.row(),item.column()-1)
-		item4.setBackground(QtGui.QColor('moccasin'))
+		item4.setBackground(QtGui.QColor('black'))
 		try:
                         #self.stop4 = threading.Event()
-                        self.thread4 = threading.Thread(target = self.blink, args = (item4,5,))
+                        self.thread4 = threading.Thread(target = self.blink, args = (item4,4.5,))
                         self.thread4.start()
                 except:
                         print "Unable to start thread4"
@@ -149,6 +176,7 @@ class Window(QtGui.QWidget):
 	self.text_field.setText(self.display_text)	
 
     def handleItemExited(self, item):
+	self.time_to_click.cancel()
 	try:
 		self.stop.set()
 		#self.stop2.set()
@@ -191,10 +219,10 @@ class Window(QtGui.QWidget):
 	item.setBackground(QtGui.QTableWidgetItem().background())	
 
     def blink(self, item,t):
-	print "It's blinking"
+	#print "It's blinking"
 	while (self.stop.is_set()==False):
 		#for i in xrange(1000):
-		item.setBackground(QtGui.QColor('moccasin'))
+		item.setBackground(QtGui.QColor('black'))
 		time.sleep(0.01*t)
 		item.setBackground(QtGui.QTableWidgetItem().background())
 		time.sleep(0.01*t)
@@ -205,7 +233,7 @@ if __name__ == '__main__':
 
     import sys
     app = QtGui.QApplication(sys.argv)
-    window = Window(8, 6)
-    window.setGeometry(500, 300, 650, 250)
+    window = Window(4,3)
+    window.setGeometry(500, 300, 800, 350)
     window.show()
     sys.exit(app.exec_())
