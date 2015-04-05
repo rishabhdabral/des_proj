@@ -18,11 +18,11 @@ class MainWindow(QtGui.QMainWindow):
 		self.central_widget = QtGui.QStackedWidget()
 		self.setCentralWidget(self.central_widget)
 
-		self.time1 = 3.5
-		self.time2 = 4
-		self.time3 = 4.5
-		self.time4 = 5
-		self.time5 = 6
+		self.time1 = 2.5
+		self.time2 = 3.3
+		self.time3 = 4.0
+		self.time4 = 4.3
+		self.time5 = 5.0
 
 		homePage = HomePage()
 		homePage.button.clicked.connect(self.page1)
@@ -93,7 +93,7 @@ class Pages(QtGui.QTableWidget):
 		
 		#Code for testing the Table
 		self.table = QtGui.QTableWidget(1,1,self)
-		item = QtGui.QTableWidgetItem("hi")
+		item = QtGui.QTableWidgetItem("")
 		self.table.setItem(0,0,item)
 		self.table.setColumnWidth(0,465)
 		self.table.setRowHeight(0,380)	

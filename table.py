@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 import threading
 import time
 from threading import Timer
+import pyttsx
 
 class TableWidget(QtGui.QTableWidget):
     cellExited = QtCore.pyqtSignal(int, int)
@@ -42,6 +43,7 @@ class Window(QtGui.QWidget):
                 item = QtGui.QTableWidgetItem(str(row) + "_" + str(column))
                 self.table.setItem(row, column, item)
 	'''	
+	'''
 	for row in xrange(rows-1):
 		for column in xrange(columns):
 			item = QtGui.QTableWidgetItem(str(3*row + column + 1))
@@ -53,6 +55,17 @@ class Window(QtGui.QWidget):
 	self.table.setItem(3,1,item0)
 	item1 = QtGui.QTableWidgetItem("#")
 	self.table.setItem(3,2,item1)
+	'''
+	item = QtGui.QTableWidgetItem("Could you please get me a glass of water?")
+	self.table.setItem(0,0,item)
+	item = QtGui.QTableWidgetItem("I wish to watch the cricket match.")
+	self.table.setItem(0,1,item)
+	item = QtGui.QTableWidgetItem("I am feeling uncomfortable, I want to rest.")
+        self.table.setItem(0,2,item)
+	item = QtGui.QTableWidgetItem("Call my son.")
+        self.table.setItem(0,3,item)
+	item = QtGui.QTableWidgetItem("Get me my medication.")
+        self.table.setItem(0,4,item)
 
 	for column in xrange(columns):
 		self.table.setColumnWidth(column,150)
@@ -84,13 +97,13 @@ class Window(QtGui.QWidget):
 	#print item.row()'''
 	
 	# Setting timer to click on that button after certain time has elapsed and the cursor is still hovering in the same button!
-	self.time_to_click = Timer(2,self.on_item_clicked,args = [item.row(),item.column(),])
+	self.time_to_click = Timer(1.5,self.on_item_clicked,args = [item.row(),item.column(),])
 	self.time_to_click.start()	#This function is called after two seconds if the function remains in the same block.
 	
 	self.stop = threading.Event()
 	item.setBackground(QtGui.QColor('black'))
 	try:
-		self.thread = threading.Thread(target = self.blink, args = (item,3.5,))
+		self.thread = threading.Thread(target = self.blink, args = (item,2.5,))
 		self.thread.start()
 	except:
 		print "Unable to start thread"
@@ -99,7 +112,7 @@ class Window(QtGui.QWidget):
 		item2.setBackground(QtGui.QColor('black'))
 		try:
 			#self.stop2 = threading.Event()
-			self.thread2 = threading.Thread(target = self.blink, args = (item2,4,))
+			self.thread2 = threading.Thread(target = self.blink, args = (item2,3.3,))
 			self.thread2.start()
 		except:
 			print "Unable to start thread2"
@@ -110,7 +123,7 @@ class Window(QtGui.QWidget):
 		item1.setBackground(QtGui.QColor('black'))
 		try:
                         #self.stop1 = threading.Event()
-                        self.thread1 = threading.Thread(target = self.blink, args = (item1,5.5,))
+                        self.thread1 = threading.Thread(target = self.blink, args = (item1,4.0,))
                         self.thread1.start()
                 except:
                         print "Unable to start thread1"
@@ -124,7 +137,7 @@ class Window(QtGui.QWidget):
 		item3.setBackground(QtGui.QColor('black'))
 		try:
                         #self.stop3 = threading.Event()
-                        self.thread3 = threading.Thread(target = self.blink, args = (item3,5,))
+                        self.thread3 = threading.Thread(target = self.blink, args = (item3,4.3,))
                         self.thread3.start()
                 except:
                         print "Unable to start thread3"
@@ -138,7 +151,7 @@ class Window(QtGui.QWidget):
 		item4.setBackground(QtGui.QColor('black'))
 		try:
                         #self.stop4 = threading.Event()
-                        self.thread4 = threading.Thread(target = self.blink, args = (item4,4.5,))
+                        self.thread4 = threading.Thread(target = self.blink, args = (item4,5.0,))
                         self.thread4.start()
                 except:
                         print "Unable to start thread4"
@@ -172,6 +185,10 @@ class Window(QtGui.QWidget):
 
     def on_item_clicked(self,x,y):
 	cell_text = self.table.item(x,y).text()
+	speak = pyttsx.init()
+	speak.say(cell_text)
+	speak.runAndWait()
+	speak.stop()
 	self.display_text += " " + cell_text
 	self.text_field.setText(self.display_text)	
 
@@ -233,7 +250,7 @@ if __name__ == '__main__':
 
     import sys
     app = QtGui.QApplication(sys.argv)
-    window = Window(4,3)
+    window = Window(1,5)
     window.setGeometry(500, 300, 800, 350)
     window.show()
     sys.exit(app.exec_())
